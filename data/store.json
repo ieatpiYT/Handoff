@@ -51,6 +51,38 @@
       "content": "Hey! I'm here and ready to assist. How can I help you today?",
       "modelName": "gpt-4o",
       "createdAt": "2026-11-13T01:14:10.034Z"
+    },
+    {
+      "id": "ca1d163e-cd2d-45ef-98d4-68944ca1adf7",
+      "sessionId": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "role": "user",
+      "content": "can my teamate work together with me in real-time while we both use different agents to chat and can we see each other's chat bots messages and stuff",
+      "modelName": "gpt-4o",
+      "createdAt": "2026-11-13T01:16:18.796Z"
+    },
+    {
+      "id": "b8288172-bc0d-464b-90c8-b4dcff5a289f",
+      "sessionId": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "role": "assistant",
+      "content": "Currently, real-time collaboration with different agents is not supported for shared visibility of each other's messages. Each interaction with an agent is private to the individual user. Let me know if you need help with anything else!",
+      "modelName": "gpt-4o",
+      "createdAt": "2026-11-13T01:16:27.608Z"
+    },
+    {
+      "id": "968a65c4-81fc-4fc3-8083-4cd7c7845dae",
+      "sessionId": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "role": "user",
+      "content": "how do i exit this shit",
+      "modelName": "gpt-4o",
+      "createdAt": "2026-11-13T01:25:46.720Z"
+    },
+    {
+      "id": "d31f06c2-e1d5-4339-8a05-fc1412469b81",
+      "sessionId": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "role": "assistant",
+      "content": "If you want to end the session, simply close the chat window or tab. If you need assistance with anything else, just let me know!",
+      "modelName": "gpt-4o",
+      "createdAt": "2026-11-13T01:25:55.112Z"
     }
   ]
 }

@@ -1,2 +1,11 @@
-import { readStore } from "@/lib/store";
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) { const { id } = await params; const s = await readStore(); const project = s.projects.find(p => p.id === id); if (!project) return Response.json({ error: "Project not found." }, { status: 404 }); return Response.json({ project, sessions: s.sessions.filter(x => x.projectId === id), handoffs: s.handoffs.filter(x => x.projectId === id), messages: s.messages }); }
+import { createHash } from "node:crypto";
+import { projectData } from "@/lib/store";
+import { json, failure } from "@/lib/http";
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+ try {
+  const data = await projectData((await params).id);
+  const cursor = createHash("sha256").update(JSON.stringify(data)).digest("hex");
+  if (new URL(req.url).searchParams.get("cursor") === cursor) return json({ unchanged: true, cursor });
+  return json({ ...data, cursor });
+ } catch(e) { return failure(e); }
+}

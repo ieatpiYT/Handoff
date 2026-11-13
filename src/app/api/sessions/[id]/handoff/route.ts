@@ -1,5 +1,23 @@
 import { randomUUID } from "node:crypto";
 import { backboard } from "@/lib/backboard";
-import { readStore, updateStore } from "@/lib/store";
-type Summary = { DONE?: string[]; DECIDED?: string[]; "IN PROGRESS"?: string[]; BLOCKERS?: string[]; "NEXT STEPS"?: string[] };
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) { try { const { id } = await params; const s = await readStore(); const session = s.sessions.find(x => x.id === id); const project = session && s.projects.find(x => x.id === session.projectId); if (!session || !project) return Response.json({ error: "Session not found." }, { status: 404 }); const existing = s.handoffs.find(x => x.sessionId === id); if (existing) return Response.json({ handoff: existing }); const r = await backboard<{ content?: string }>("/threads/messages", { method: "POST", body: JSON.stringify({ thread_id: session.threadId, assistant_id: project.assistantId, content: "End this session and create a structured handoff. Return ONLY valid JSON with exactly these array keys: DONE, DECIDED, IN PROGRESS, BLOCKERS, NEXT STEPS. Use only facts from our conversation and shared memory.", llm_provider: session.modelProvider, model_name: session.modelName, memory: "Auto", json_output: true }) }); let parsed: Summary = {}; try { parsed = JSON.parse(r.content || "{}"); } catch { parsed = { DONE: [r.content || "Summary unavailable"] }; } const clean = (v?: string[]) => Array.isArray(v) ? v.filter(x => typeof x === "string") : []; const handoff = { id: randomUUID(), projectId: project.id, sessionId: id, participantName: session.participantName, modelName: session.modelName, done: clean(parsed.DONE), decided: clean(parsed.DECIDED), inProgress: clean(parsed["IN PROGRESS"]), blockers: clean(parsed.BLOCKERS), nextSteps: clean(parsed["NEXT STEPS"]), createdAt: new Date().toISOString() }; await updateStore(x => { x.handoffs.push(handoff); const found = x.sessions.find(y => y.id === id); if (found) found.endedAt = handoff.createdAt; }); return Response.json({ handoff }); } catch (e) { return Response.json({ error: e instanceof Error ? e.message : "Handoff failed." }, { status: 502 }); } }
+import { sessionData, claim, release, finish } from "@/lib/store";
+import { json, failure } from "@/lib/http";
+export const maxDuration = 240;
+export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+ const { id } = await params, token = randomUUID(); let owned = false;
+ try {
+  const { session, project, handoffs } = await sessionData(id);
+  const existing = handoffs.find(h=>h.sessionId===id); if (existing) return json({ handoff: existing });
+  await claim(id,token); owned = true;
+  const r = await backboard<{ content?: string }>("/threads/messages", { method: "POST", body: JSON.stringify({ thread_id: session.threadId, assistant_id: project.assistantId, content: "End this session and create a structured handoff. Return ONLY valid JSON with exactly these array keys: DONE, DECIDED, IN PROGRESS, BLOCKERS, NEXT STEPS. Use only facts from our conversation and shared memory.", llm_provider: session.modelProvider, model_name: session.modelName, memory: "Auto", json_output: true }) });
+  const parsed = JSON.parse(r.content || "");
+  const list = (key: string): string[] => {
+   const value = parsed?.[key];
+   if (!Array.isArray(value) || value.some(x=>typeof x!=="string")) throw new Error("Backboard returned an invalid handoff. Nothing was saved; please retry.");
+   return value;
+  };
+  const handoff = { id: randomUUID(), projectId: project.id, sessionId: id, participantName: session.participantName, modelName: session.modelName, done: list("DONE"), decided: list("DECIDED"), inProgress: list("IN PROGRESS"), blockers: list("BLOCKERS"), nextSteps: list("NEXT STEPS"), createdAt: new Date().toISOString() };
+  await finish(id,token,[],handoff); owned = false; return json({ handoff });
+ } catch(e) { return failure(e); }
+ finally { if (owned) await release(id,token).catch(()=>{}); }
+}
