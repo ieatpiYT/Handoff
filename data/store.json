@@ -1,0 +1,56 @@
+{
+  "projects": [
+    {
+      "id": "cf523ef9",
+      "name": "Handoff 2.0",
+      "description": "",
+      "assistantId": "b7502a20-a61c-4918-b1fd-2fdae61160c2",
+      "createdAt": "2026-11-13T01:13:14.072Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "projectId": "cf523ef9",
+      "participantName": "Eric",
+      "modelProvider": "openai",
+      "modelName": "gpt-4o",
+      "threadId": "96822d81-2fcb-4271-9a69-965164928964",
+      "startedAt": "2026-11-13T01:13:35.835Z",
+      "endedAt": "2026-11-13T01:14:36.806Z"
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "18ee952c-0683-4570-ac8e-8010330335f5",
+      "projectId": "cf523ef9",
+      "sessionId": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "participantName": "Eric",
+      "modelName": "gpt-4o",
+      "done": [],
+      "decided": [],
+      "inProgress": [],
+      "blockers": [],
+      "nextSteps": [],
+      "createdAt": "2026-11-13T01:14:36.806Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": "2f8dbb34-baf6-4366-983d-3dc8a42ab1f9",
+      "sessionId": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "role": "user",
+      "content": "hey hows it going",
+      "modelName": "gpt-4o",
+      "createdAt": "2026-11-13T01:14:03.810Z"
+    },
+    {
+      "id": "eadf8672-64e0-4b37-9d78-e8979dfee4ed",
+      "sessionId": "1063e66d-e21b-4a0d-a335-5496e687c4f1",
+      "role": "assistant",
+      "content": "Hey! I'm here and ready to assist. How can I help you today?",
+      "modelName": "gpt-4o",
+      "createdAt": "2026-11-13T01:14:10.034Z"
+    }
+  ]
+}

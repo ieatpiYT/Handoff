@@ -1,0 +1,2 @@
+import { readStore } from "@/lib/store";
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) { const { id } = await params; const s = await readStore(); const project = s.projects.find(p => p.id === id); if (!project) return Response.json({ error: "Project not found." }, { status: 404 }); return Response.json({ project, sessions: s.sessions.filter(x => x.projectId === id), handoffs: s.handoffs.filter(x => x.projectId === id), messages: s.messages }); }
